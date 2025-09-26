@@ -121,4 +121,12 @@ public class ReservationServiceImpl implements ReservationService{
         );
     }
 
+    @Override
+    public ReservationResponse getReservation(Long id) {
+        log.info("Fetching reservation with ID: {}", id);
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new InvalidReservationException("Reservation not found"));
+        return mapToResponse(reservation);
+    }
+
 }

@@ -7,10 +7,7 @@ import com.parking.reservation.service.ReservationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/api")
@@ -25,5 +22,9 @@ public class ReservationController {
         return ResponseEntity.ok(ApiResponse.success(response, "Reservation created successfully"));
     }
 
-
+    @GetMapping("/reservations/{id}")
+    public ResponseEntity<ApiResponse<ReservationResponse>> getReservation(@PathVariable Long id) {
+        ReservationResponse response = reservationService.getReservation(id);
+        return ResponseEntity.ok(ApiResponse.success(response, "Reservation fetched successfully"));
+    }
 }

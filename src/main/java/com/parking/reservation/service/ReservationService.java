@@ -6,4 +6,6 @@ import jakarta.validation.Valid;
 
 public interface ReservationService {
     ReservationResponse reserveSlot(@Valid ReserveRequest request);
+
+    ReservationResponse getReservation(Long id);
 }

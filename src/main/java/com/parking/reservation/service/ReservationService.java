@@ -8,4 +8,6 @@ public interface ReservationService {
     ReservationResponse reserveSlot(@Valid ReserveRequest request);
 
     ReservationResponse getReservation(Long id);
+
+    void cancelReservation(Long id);
 }

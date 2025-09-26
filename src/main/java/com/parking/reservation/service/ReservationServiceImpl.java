@@ -129,4 +129,14 @@ public class ReservationServiceImpl implements ReservationService{
         return mapToResponse(reservation);
     }
 
+    @Override
+    public void cancelReservation(Long id) {
+        log.info("Cancelling reservation with ID: {}", id);
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new InvalidReservationException("Reservation not found"));
+        reservation.setStatus(ReservationStatus.CANCELLED);
+        reservationRepository.save(reservation);
+    }
+
+
 }

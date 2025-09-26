@@ -27,4 +27,10 @@ public class ReservationController {
         ReservationResponse response = reservationService.getReservation(id);
         return ResponseEntity.ok(ApiResponse.success(response, "Reservation fetched successfully"));
     }
+
+    @DeleteMapping("/reservations/{id}")
+    public ResponseEntity<ApiResponse<Void>> cancelReservation(@PathVariable Long id) {
+        reservationService.cancelReservation(id);
+        return ResponseEntity.ok(ApiResponse.success(null, "Reservation cancelled successfully"));
+    }
 }

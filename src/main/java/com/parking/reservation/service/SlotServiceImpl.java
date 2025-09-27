@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SlotServiceImpl implements SlotService{
+public class SlotServiceImpl implements SlotService {
 
     private final SlotRepository slotRepository;
     private final FloorRepository floorRepository;

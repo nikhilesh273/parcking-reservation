@@ -3,7 +3,6 @@ package com.parking.reservation.controller;
 import com.parking.reservation.dto.ApiResponse;
 import com.parking.reservation.dto.request.CreateFloorRequest;
 import com.parking.reservation.dto.response.FloorResponse;
-import com.parking.reservation.entity.Floor;
 import com.parking.reservation.service.FloorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

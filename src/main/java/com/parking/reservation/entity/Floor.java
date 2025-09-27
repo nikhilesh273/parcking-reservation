@@ -6,12 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Represents a physical floor in the parking facility.
- * <p>
- * Each floor contains multiple {@link Slot}s.
- */
-
 @Entity
 @Table(name = "floors")
 @Getter

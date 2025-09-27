@@ -3,9 +3,12 @@ package com.parking.reservation.dto.request;
 import com.parking.reservation.enums.VehicleType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateSlotRequest {
     @NotNull(message = "Floor ID is required")
     private Long floorId;

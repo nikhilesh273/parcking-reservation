@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class FloorServiceImpl implements FloorService{
+public class FloorServiceImpl implements FloorService {
 
     private final FloorRepository floorRepository;
 

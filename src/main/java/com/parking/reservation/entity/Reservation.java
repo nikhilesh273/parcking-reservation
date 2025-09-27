@@ -6,19 +6,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Represents a customer's reservation of a {@link Slot} for a specific time window.
- * --------------------------------------------------
- * @author nikhilesh
- * @Created 26-Sep-2025
- * <p>
- * Enforces business rules:
- * - No overlapping reservations for the same slot
- * - Duration ≤ 24 hours
- * - Valid vehicle number format
- * - Cost calculated with partial-hour rounding
- */
-
 @Entity
 @Table(name = "reservations")
 @Getter

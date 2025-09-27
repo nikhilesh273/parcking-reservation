@@ -2,21 +2,29 @@ package com.parking.reservation.service;
 
 import com.parking.reservation.dto.request.ReserveRequest;
 import com.parking.reservation.dto.response.ReservationResponse;
+import com.parking.reservation.dto.response.SlotResponse;
 import com.parking.reservation.entity.Reservation;
 import com.parking.reservation.entity.Slot;
 import com.parking.reservation.enums.ReservationStatus;
+import com.parking.reservation.enums.VehicleType;
 import com.parking.reservation.exception.InvalidReservationException;
 import com.parking.reservation.exception.SlotNotFoundException;
 import com.parking.reservation.exception.SlotUnavailableException;
 import com.parking.reservation.repository.ReservationRepository;
 import com.parking.reservation.repository.SlotRepository;
 import com.parking.reservation.util.PricingUtil;
+import com.parking.reservation.util.SlotConstants;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -24,7 +32,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
-public class ReservationServiceImpl implements ReservationService{
+public class ReservationServiceImpl implements ReservationService {
 
     private static final Pattern VEHICLE_PATTERN = Pattern.compile("^[A-Z]{2}\\d{2}[A-Z]{2}\\d{4}$");
 
@@ -38,11 +46,8 @@ public class ReservationServiceImpl implements ReservationService{
 
         validateRequest(request);
 
-        Slot slot = slotRepository.findById(request.getSlotId())
-                .orElseThrow(() -> {
-                    log.warn("Slot not found with ID: {}", request.getSlotId());
-                    return new SlotNotFoundException("Slot not found with ID: " + request.getSlotId());
-                });
+        Slot slot = slotRepository.findByIdWithLock(request.getSlotId())
+                .orElseThrow(() -> new SlotNotFoundException("Slot not found"));
 
         if (!slot.getVehicleType().equals(request.getVehicleType())) {
             String msg = String.format("Vehicle type mismatch: slot supports %s, but %s was requested",
@@ -85,12 +90,6 @@ public class ReservationServiceImpl implements ReservationService{
         return mapToResponse(saved);
     }
 
-    /**
-     * Validates the reservation request against business rules.
-     *
-     * @param req the reservation request
-     * @throws InvalidReservationException if any rule is violated
-     */
     private void validateRequest(ReserveRequest req) {
         if (req.getStartTime() == null || req.getEndTime() == null) {
             throw new InvalidReservationException("Start and end time are required");
@@ -106,9 +105,6 @@ public class ReservationServiceImpl implements ReservationService{
         }
     }
 
-    /**
-     * Maps a {@link Reservation} entity to its response DTO.
-     */
     private ReservationResponse mapToResponse(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
@@ -138,5 +134,46 @@ public class ReservationServiceImpl implements ReservationService{
         reservationRepository.save(reservation);
     }
 
+    @Override
+    public Page<SlotResponse> getAvailableSlots(
+            LocalDateTime startTime,
+            LocalDateTime endTime,
+            VehicleType vehicleType,
+            Pageable pageable) {
 
+        log.info("Fetching available slots for vehicle type: {}, time range: {} to {}, page: {}",
+                vehicleType, startTime, endTime, pageable);
+
+        if (pageable.getSort().isSorted()) {
+            for (Sort.Order order : pageable.getSort()) {
+                String property = order.getProperty();
+                if (!SlotConstants.ALLOWED_SORT_PROPERTIES.contains(property)) {
+                    throw new InvalidReservationException(
+                            "Sorting by '" + property + "' is not allowed. Allowed: " +
+                                    SlotConstants.ALLOWED_SORT_PROPERTIES);
+                }
+            }
+        }
+
+        if (!startTime.isBefore(endTime)) {
+            throw new InvalidReservationException("Start time must be before end time");
+        }
+        if (Duration.between(startTime, endTime).toHours() > 24) {
+            throw new InvalidReservationException("Time range cannot exceed 24 hours");
+        }
+
+        Page<Slot> availableSlots = reservationRepository.findAvailableSlots(startTime, endTime, vehicleType, pageable);
+
+        return availableSlots.map(this::mapToSlotResponse);
+    }
+
+    private SlotResponse mapToSlotResponse(Slot slot) {
+        return new SlotResponse(
+                slot.getId(),
+                slot.getSlotNumber(),
+                slot.getVehicleType().name(),
+                slot.getFloor().getId(),
+                slot.getFloor().getName()
+        );
+    }
 }

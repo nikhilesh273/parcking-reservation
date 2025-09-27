@@ -1,9 +1,12 @@
 package com.parking.reservation.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateFloorRequest {
     @NotBlank(message = "Floor name is required")
     private String name;

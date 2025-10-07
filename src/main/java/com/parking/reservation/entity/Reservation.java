@@ -38,5 +38,5 @@ public class Reservation {
     private ReservationStatus status;
 
     @Version
-    private Long version;
+    private Long version;//two users cannot update the same record at the same time
 }

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "slots", uniqueConstraints = @UniqueConstraint(columnNames = {"floor_id", "slot_number"}))
+@Table(name = "slots", uniqueConstraints = @UniqueConstraint(columnNames = {"floor_id", "slot_number"}))//to ensure no duplicate slot numbers on the same floor
 @Getter
 @Setter
 @NoArgsConstructor

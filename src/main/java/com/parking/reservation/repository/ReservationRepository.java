@@ -17,7 +17,11 @@ import java.util.List;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    @Query("SELECT r FROM Reservation r " + "WHERE r.slot.id = :slotId " + "AND r.status = :status " + "AND r.endTime > :startTime " + "AND r.startTime < :endTime")
+    @Query("SELECT r FROM Reservation r " +
+            "WHERE r.slot.id = :slotId " +
+            "AND r.status = :status " +
+            "AND r.endTime > :startTime " +
+            "AND r.startTime < :endTime")
     List<Reservation> findOverlapping(@Param("slotId") Long slotId, @Param("status") ReservationStatus status, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
     @Query("""

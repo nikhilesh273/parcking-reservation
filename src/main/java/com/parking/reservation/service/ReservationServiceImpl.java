@@ -164,7 +164,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         Page<Slot> availableSlots = reservationRepository.findAvailableSlots(startTime, endTime, vehicleType, pageable);
 
-        return availableSlots.map(this::mapToSlotResponse);
+       return availableSlots.map(this::mapToSlotResponse);
     }
 
     private SlotResponse mapToSlotResponse(Slot slot) {
